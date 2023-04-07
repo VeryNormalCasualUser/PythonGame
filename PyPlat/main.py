@@ -57,6 +57,10 @@ def main(window):
                 run = False
                 break
         
+            if event.type == pygame.KEYDOWN: 
+                if event.key == pygame.K_SPACE: 
+                    player.jump()
+            
         player.loop(FPS)
         player.handle_move(PLAYER_VEL, floor)   
         helper.Helper().draw(window, background, bg_image, player, floor)

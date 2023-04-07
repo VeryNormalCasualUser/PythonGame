@@ -8,6 +8,8 @@ class Player(pygame.sprite.Sprite):
     SPRITES = helper.Helper().load_sprite_sheets( "MainCharacters" , "PinkMan" , 32 , 32 , True )
     ANIMATION_DELAY = 4
     
+    JUMPVARIABLE = 9
+    
     GRAVITY = 1
     
     COLOR = (255, 0, 0)
@@ -43,11 +45,12 @@ class Player(pygame.sprite.Sprite):
         return collided_objects
     
     def jump(self):
-        self.y_vel = -self.GRAVITY * 5
-        self.animation_count = 0
-        self.jump_count += 1
-        if self.jump_count == 1: 
-            self.fall_count = 0
+        if self.jump_count < 2 : 
+            self.y_vel = -self.GRAVITY * self.JUMPVARIABLE
+            self.animation_count = 0
+            self.jump_count += 1
+            if self.jump_count == 1: 
+                self.fall_count = 0
         
     
     def landed(self): 
@@ -73,7 +76,14 @@ class Player(pygame.sprite.Sprite):
     
     def update_sprite(self): 
         sprite_sheet = "idle"
-        if self.x_vel != 0: 
+        if self.y_vel < 0: 
+            if self.jump_count == 1: 
+                sprite_sheet = "jump"
+            elif self.jump_count == 2:
+                 sprite_sheet = "double_jump"
+        elif self.y_vel > self.GRAVITY: 
+            sprite_sheet = "fall"
+        elif self.x_vel != 0: 
             sprite_sheet = "run"
             
         sprite_sheet_name = sprite_sheet + "_" + self.direction
@@ -104,7 +114,7 @@ class Player(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.sprite)
 
     def loop(self, fps):
-        self.y_vel += (self.fall_count / fps) * self.GRAVITY
+        self.y_vel += (self.fall_count*2  / fps) * self.GRAVITY
         self.move(self.x_vel, self.y_vel)
         self.fall_count += 1
         self.update_sprite()
